@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public class EmployeeDAO {
     
     public boolean registerEmployee(Employee employee) {
-        String query = "INSERT INTO employees (name, email, password, hourly_rate) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO employees (name, email, password, hourly_rate, role) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             
@@ -17,6 +17,7 @@ public class EmployeeDAO {
             pstmt.setString(2, employee.getEmail());
             pstmt.setString(3, employee.getPassword());
             pstmt.setDouble(4, employee.getHourlyRate());
+            pstmt.setString(5, employee.getRole() != null ? employee.getRole() : "EMPLOYEE");
             
             return pstmt.executeUpdate() > 0;
             
@@ -42,6 +43,7 @@ public class EmployeeDAO {
                 emp.setEmail(rs.getString("email"));
                 emp.setPassword(rs.getString("password"));
                 emp.setHourlyRate(rs.getDouble("hourly_rate"));
+                emp.setRole(rs.getString("role"));
                 return emp;
             }
             
@@ -66,6 +68,7 @@ public class EmployeeDAO {
                 emp.setEmail(rs.getString("email"));
                 emp.setPassword(rs.getString("password"));
                 emp.setHourlyRate(rs.getDouble("hourly_rate"));
+                emp.setRole(rs.getString("role"));
                 return emp;
             }
             
@@ -73,5 +76,27 @@ public class EmployeeDAO {
             System.err.println("Error fetching employee: " + e.getMessage());
         }
         return null;
+    }
+
+    public java.util.List<Employee> getAllEmployees() {
+        java.util.List<Employee> list = new java.util.ArrayList<>();
+        String query = "SELECT * FROM employees";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            while (rs.next()) {
+                Employee emp = new Employee();
+                emp.setId(rs.getInt("id"));
+                emp.setName(rs.getString("name"));
+                emp.setEmail(rs.getString("email"));
+                emp.setHourlyRate(rs.getDouble("hourly_rate"));
+                emp.setRole(rs.getString("role"));
+                list.add(emp);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching all employees: " + e.getMessage());
+        }
+        return list;
     }
 }

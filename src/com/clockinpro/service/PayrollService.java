@@ -18,11 +18,10 @@ public class PayrollService {
         this.employeeDAO = new EmployeeDAO();
     }
 
-    public void generatePayroll(int employeeId, String monthYear) {
+    public String generatePayroll(int employeeId, String monthYear) {
         double totalHours = attendanceDAO.getTotalHoursByMonth(employeeId, monthYear);
         if (totalHours <= 0) {
-            System.out.println("No completed work hours found for the month of " + monthYear);
-            return;
+            return "No completed work hours found for the month of " + monthYear;
         }
 
         Employee emp = employeeDAO.getEmployeeById(employeeId);
@@ -36,26 +35,14 @@ public class PayrollService {
 
         boolean success = payrollDAO.savePayroll(payroll);
         if (success) {
-            System.out.printf("Payroll generated successfully for %s! Total Hours: %.2f, Total Salary: $%.2f%n", 
+            return String.format("Payroll generated successfully for %s! Total Hours: %.2f, Total Salary: $%.2f", 
                               monthYear, totalHours, totalSalary);
         } else {
-            System.out.println("Failed to generate payroll.");
+            return "Failed to generate payroll.";
         }
     }
 
-    public void displayMonthlyReports(int employeeId) {
-        List<Payroll> reports = payrollDAO.getPayrollByEmployee(employeeId);
-        if (reports.isEmpty()) {
-            System.out.println("No payroll reports found.");
-            return;
-        }
-
-        System.out.println("\n--- Monthly Payroll Reports ---");
-        System.out.printf("%-10s | %-15s | %-15s%n", "Month", "Total Hours", "Total Salary");
-        System.out.println("---------------------------------------------------");
-        for (Payroll p : reports) {
-            System.out.printf("%-10s | %-15.2f | $%-14.2f%n", p.getMonth(), p.getTotalHours(), p.getTotalSalary());
-        }
-        System.out.println("---------------------------------------------------");
+    public List<Payroll> getMonthlyReports(int employeeId) {
+        return payrollDAO.getPayrollByEmployee(employeeId);
     }
 }

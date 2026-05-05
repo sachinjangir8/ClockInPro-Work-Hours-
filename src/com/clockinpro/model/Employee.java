@@ -6,15 +6,17 @@ public class Employee {
     private String email;
     private String password;
     private double hourlyRate;
+    private String role;
 
     public Employee() {}
 
-    public Employee(int id, String name, String email, String password, double hourlyRate) {
+    public Employee(int id, String name, String email, String password, double hourlyRate, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.hourlyRate = hourlyRate;
+        this.role = role;
     }
 
     public int getId() { return id; }
@@ -31,4 +33,7 @@ public class Employee {
     
     public double getHourlyRate() { return hourlyRate; }
     public void setHourlyRate(double hourlyRate) { this.hourlyRate = hourlyRate; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

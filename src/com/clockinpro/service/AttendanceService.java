@@ -12,27 +12,25 @@ public class AttendanceService {
         this.attendanceDAO = new AttendanceDAO();
     }
 
-    public void clockIn(int employeeId) {
+    public String clockIn(int employeeId) {
         Attendance current = attendanceDAO.getActiveLogin(employeeId);
         if (current != null) {
-            System.out.println("Error: You are already clocked in! Please clock out first.");
-            return;
+            return "Error: You are already clocked in! Please clock out first.";
         }
         
         Timestamp now = new Timestamp(System.currentTimeMillis());
         boolean success = attendanceDAO.recordLogin(employeeId, now);
         if (success) {
-            System.out.println("Success: Clocked in at " + now);
+            return "Success: Clocked in at " + now;
         } else {
-            System.out.println("Error during clock-in. Please try again.");
+            return "Error during clock-in. Please try again.";
         }
     }
 
-    public void clockOut(int employeeId) {
+    public String clockOut(int employeeId) {
         Attendance current = attendanceDAO.getActiveLogin(employeeId);
         if (current == null) {
-            System.out.println("Error: You have not clocked in yet!");
-            return;
+            return "Error: You have not clocked in yet!";
         }
 
         Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -41,26 +39,13 @@ public class AttendanceService {
 
         boolean success = attendanceDAO.recordLogout(current.getId(), now, hours);
         if (success) {
-            System.out.println(String.format("Success: Clocked out at %s. Session hours: %.2f", now, hours));
+            return String.format("Success: Clocked out at %s. Session hours: %.2f", now, hours);
         } else {
-            System.out.println("Error during clock-out. Please try again.");
+            return "Error during clock-out. Please try again.";
         }
     }
 
-    public void displayWorkHours(int employeeId) {
-        List<Attendance> records = attendanceDAO.getAttendanceByEmployee(employeeId);
-        if(records.isEmpty()) {
-            System.out.println("No attendance records found.");
-            return;
-        }
-        
-        System.out.println("\n--- Work Hours History ---");
-        System.out.printf("%-25s | %-25s | %-10s%n", "Login Time", "Logout Time", "Hours");
-        System.out.println("----------------------------------------------------------------------");
-        for (Attendance att : records) {
-            String logout = att.getLogoutTime() != null ? att.getLogoutTime().toString() : "Currently Active";
-            System.out.printf("%-25s | %-25s | %-10.2f%n", att.getLoginTime(), logout, att.getTotalHours());
-        }
-        System.out.println("----------------------------------------------------------------------");
+    public List<Attendance> getWorkHoursHistory(int employeeId) {
+        return attendanceDAO.getAttendanceByEmployee(employeeId);
     }
 }
