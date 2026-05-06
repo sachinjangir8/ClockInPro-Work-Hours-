@@ -45,4 +45,8 @@ public class PayrollService {
     public List<Payroll> getMonthlyReports(int employeeId) {
         return payrollDAO.getPayrollByEmployee(employeeId);
     }
+
+    public List<Payroll> getAllPayrolls() {
+        return payrollDAO.getAllPayrolls();
+    }
 }

@@ -68,4 +68,25 @@ public class PayrollDAO {
         }
         return list;
     }
+    
+    public List<Payroll> getAllPayrolls() {
+        List<Payroll> list = new ArrayList<>();
+        String query = "SELECT * FROM payroll ORDER BY month DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+                Payroll p = new Payroll();
+                p.setId(rs.getInt("id"));
+                p.setEmployeeId(rs.getInt("employee_id"));
+                p.setMonth(rs.getString("month"));
+                p.setTotalHours(rs.getDouble("total_hours"));
+                p.setTotalSalary(rs.getDouble("total_salary"));
+                list.add(p);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching all payrolls: " + e.getMessage());
+        }
+        return list;
+    }
 }

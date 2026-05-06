@@ -10,8 +10,8 @@ public class EmployeeService {
         this.employeeDAO = new EmployeeDAO();
     }
 
-    public boolean register(String name, String email, String password, double hourlyRate) {
-        Employee emp = new Employee(0, name, email, password, hourlyRate, "EMPLOYEE");
+    public boolean register(String name, String email, String password, double hourlyRate, String role) {
+        Employee emp = new Employee(0, name, email, password, hourlyRate, role);
         return employeeDAO.registerEmployee(emp);
     }
 

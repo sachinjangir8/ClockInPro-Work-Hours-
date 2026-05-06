@@ -8,7 +8,7 @@ public class DatabaseConnection {
     // Modify these credentials according to your MySQL setup
     private static final String URL = "jdbc:mysql://localhost:3306/clockinpro";
     private static final String USER = "root";
-    private static final String PASSWORD = "sachin";
+    private static final String PASSWORD = "";
 
     public static Connection getConnection() {
         try {
