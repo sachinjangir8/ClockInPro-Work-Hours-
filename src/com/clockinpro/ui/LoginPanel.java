@@ -18,12 +18,12 @@ public class LoginPanel extends JPanel {
         this.employeeService = new EmployeeService();
 
         setLayout(new GridBagLayout());
-        setBackground(new Color(230, 240, 255)); // Matching light slate/blue
+        setBackground(new Color(240, 244, 248)); // Crisp high-contrast light background
 
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 220), 1),
+                BorderFactory.createLineBorder(new Color(150, 155, 160), 2),
                 BorderFactory.createEmptyBorder(40, 50, 40, 50)
         ));
 
@@ -33,7 +33,7 @@ public class LoginPanel extends JPanel {
 
         JLabel titleLabel = new JLabel("Welcome to ClockInPro");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
-        titleLabel.setForeground(new Color(40, 40, 40));
+        titleLabel.setForeground(Color.BLACK);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -68,7 +68,7 @@ public class LoginPanel extends JPanel {
 
         JButton loginButton = new JButton("Login");
         loginButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        loginButton.setBackground(new Color(51, 153, 255));
+        loginButton.setBackground(new Color(0, 95, 200)); // Darker high-contrast blue
         loginButton.setForeground(Color.WHITE);
         loginButton.setFocusPainted(false);
         loginButton.setPreferredSize(new Dimension(200, 40));
@@ -84,7 +84,7 @@ public class LoginPanel extends JPanel {
         registerButton.setFont(labelFont);
         registerButton.setContentAreaFilled(false);
         registerButton.setBorderPainted(false);
-        registerButton.setForeground(new Color(0, 102, 204));
+        registerButton.setForeground(new Color(0, 80, 160)); // Darker link text
         registerButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         registerButton.addActionListener(e -> mainFrame.showPanel("Register"));
 
@@ -106,6 +106,14 @@ public class LoginPanel extends JPanel {
 
         Employee emp = employeeService.login(email, password);
         if (emp != null) {
+            if ("HR".equalsIgnoreCase(emp.getRole()) || "ADMIN".equalsIgnoreCase(emp.getRole())) {
+                String passkey = JOptionPane.showInputDialog(this, "Enter HR Passkey to continue:");
+                if (!"111".equals(passkey)) {
+                    JOptionPane.showMessageDialog(this, "Invalid HR Passkey. Login cancelled.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
             JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
             
             if ("HR".equalsIgnoreCase(emp.getRole()) || "ADMIN".equalsIgnoreCase(emp.getRole())) {

@@ -48,4 +48,8 @@ public class AttendanceService {
     public List<Attendance> getWorkHoursHistory(int employeeId) {
         return attendanceDAO.getAttendanceByEmployee(employeeId);
     }
+
+    public Attendance getActiveSession(int employeeId) {
+        return attendanceDAO.getActiveLogin(employeeId);
+    }
 }

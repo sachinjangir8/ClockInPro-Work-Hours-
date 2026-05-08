@@ -89,4 +89,25 @@ public class PayrollDAO {
         }
         return list;
     }
+
+    public Payroll getPayrollById(int payrollId) {
+        String query = "SELECT * FROM payroll WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, payrollId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Payroll p = new Payroll();
+                p.setId(rs.getInt("id"));
+                p.setEmployeeId(rs.getInt("employee_id"));
+                p.setMonth(rs.getString("month"));
+                p.setTotalHours(rs.getDouble("total_hours"));
+                p.setTotalSalary(rs.getDouble("total_salary"));
+                return p;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching payroll by ID: " + e.getMessage());
+        }
+        return null;
+    }
 }

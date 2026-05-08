@@ -19,12 +19,12 @@ public class RegisterPanel extends JPanel {
         this.employeeService = new EmployeeService();
 
         setLayout(new GridBagLayout());
-        setBackground(new Color(230, 240, 255));
+        setBackground(new Color(240, 244, 248));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 220), 1),
+                BorderFactory.createLineBorder(new Color(150, 155, 160), 2),
                 BorderFactory.createEmptyBorder(40, 50, 40, 50)
         ));
 
@@ -34,7 +34,7 @@ public class RegisterPanel extends JPanel {
 
         JLabel titleLabel = new JLabel("Create an Account");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
-        titleLabel.setForeground(new Color(40, 40, 40));
+        titleLabel.setForeground(Color.BLACK);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         gbc.insets = new Insets(10, 10, 30, 10);
@@ -84,7 +84,7 @@ public class RegisterPanel extends JPanel {
 
         JButton registerButton = new JButton("Register");
         registerButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        registerButton.setBackground(new Color(40, 167, 69));
+        registerButton.setBackground(new Color(25, 135, 84)); // High-contrast green
         registerButton.setForeground(Color.WHITE);
         registerButton.setFocusPainted(false);
         registerButton.setPreferredSize(new Dimension(200, 40));
@@ -98,7 +98,7 @@ public class RegisterPanel extends JPanel {
         backButton.setFont(labelFont);
         backButton.setContentAreaFilled(false);
         backButton.setBorderPainted(false);
-        backButton.setForeground(new Color(0, 102, 204));
+        backButton.setForeground(new Color(0, 80, 160));
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         backButton.addActionListener(e -> mainFrame.showPanel("Login"));
         gbc.gridy = 7;
@@ -126,6 +126,14 @@ public class RegisterPanel extends JPanel {
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid hourly rate.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        if ("HR".equalsIgnoreCase(role)) {
+            String passkey = JOptionPane.showInputDialog(this, "Enter HR Passkey:");
+            if (!"111".equals(passkey)) {
+                JOptionPane.showMessageDialog(this, "Invalid HR Passkey. Registration cancelled.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
 
         boolean success = employeeService.register(name, email, password, rate, role);

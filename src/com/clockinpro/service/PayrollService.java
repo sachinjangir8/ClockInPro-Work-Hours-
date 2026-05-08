@@ -49,4 +49,31 @@ public class PayrollService {
     public List<Payroll> getAllPayrolls() {
         return payrollDAO.getAllPayrolls();
     }
+
+    public String generatePaySlipText(int payrollId) {
+        Payroll p = payrollDAO.getPayrollById(payrollId);
+        if (p == null) return "Payroll record not found.";
+
+        Employee emp = employeeDAO.getEmployeeById(p.getEmployeeId());
+        if (emp == null) return "Employee record not found.";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("==========================================\n");
+        sb.append("          CLOCKINPRO - PAY SLIP           \n");
+        sb.append("==========================================\n");
+        sb.append("Employee Name: ").append(emp.getName()).append("\n");
+        sb.append("Employee ID:   ").append(emp.getId()).append("\n");
+        sb.append("Role:          ").append(emp.getRole()).append("\n");
+        sb.append("------------------------------------------\n");
+        sb.append("Pay Period:    ").append(p.getMonth()).append("\n");
+        sb.append("Hourly Rate:   $").append(String.format("%.2f", emp.getHourlyRate())).append("\n");
+        sb.append("Total Hours:   ").append(String.format("%.2f", p.getTotalHours())).append("\n");
+        sb.append("------------------------------------------\n");
+        sb.append("GROSS SALARY:  $").append(String.format("%.2f", p.getTotalSalary())).append("\n");
+        sb.append("==========================================\n");
+        sb.append("Generated on: ").append(java.time.LocalDateTime.now()).append("\n");
+        sb.append("==========================================\n");
+
+        return sb.toString();
+    }
 }

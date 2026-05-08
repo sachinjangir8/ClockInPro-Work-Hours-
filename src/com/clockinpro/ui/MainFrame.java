@@ -14,7 +14,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         setTitle("ClockInPro - Work Hours & Payroll Tracker");
-        setSize(800, 600);
+        setSize(1000, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -58,7 +58,13 @@ public class MainFrame extends JFrame {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            // Use Nimbus Look and Feel for modern UI and proper color rendering
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
