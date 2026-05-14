@@ -2,6 +2,10 @@ package com.clockinpro.ui;
 
 import com.clockinpro.model.Employee;
 import com.clockinpro.model.Payroll;
+import com.clockinpro.model.Announcement;
+import com.clockinpro.model.Report;
+import com.clockinpro.dao.AnnouncementDAO;
+import com.clockinpro.dao.ReportDAO;
 import com.clockinpro.service.EmployeeService;
 import com.clockinpro.service.PayrollService;
 
@@ -14,12 +18,15 @@ public class AdminDashboardPanel extends JPanel {
     private MainFrame mainFrame;
     private EmployeeService employeeService;
     private PayrollService payrollService;
+    private AnnouncementDAO announcementDAO;
+    private ReportDAO reportDAO;
     private Employee currentEmployee;
 
     private JLabel welcomeLabel;
     private JLabel clockLabel;
     private JTable employeeTable;
     private JTable payrollTable;
+    private JTable reportTable;
     private JLabel expensesLabel;
     private Timer uiTimer;
 
@@ -27,6 +34,8 @@ public class AdminDashboardPanel extends JPanel {
         this.mainFrame = mainFrame;
         this.employeeService = new EmployeeService();
         this.payrollService = new PayrollService();
+        this.announcementDAO = new AnnouncementDAO();
+        this.reportDAO = new ReportDAO();
 
         setLayout(new BorderLayout(15, 15));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -38,7 +47,7 @@ public class AdminDashboardPanel extends JPanel {
         
         JPanel titlePanel = new JPanel(new GridLayout(2, 1));
         titlePanel.setOpaque(false);
-        welcomeLabel = new JLabel("HR Management Dashboard", SwingConstants.LEFT);
+        welcomeLabel = new JLabel("Admin Management Dashboard", SwingConstants.LEFT);
         welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
         welcomeLabel.setForeground(new Color(33, 37, 41));
         
@@ -123,6 +132,66 @@ public class AdminDashboardPanel extends JPanel {
         
         tabbedPane.addTab("Payroll Analytics", payrollPanel);
 
+        // Tab 3: Reports View
+        JPanel reportsPanel = new JPanel(new BorderLayout(10, 10));
+        reportsPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        String[] repCols = {"Report ID", "Employee ID", "Date", "Report Text"};
+        reportTable = new JTable(new DefaultTableModel(repCols, 0));
+        reportTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        reportTable.setRowHeight(32);
+        reportTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        reportsPanel.add(new JScrollPane(reportTable), BorderLayout.CENTER);
+        
+        JButton viewReportButton = new JButton("View Full Report");
+        viewReportButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        viewReportButton.setBackground(new Color(108, 117, 125));
+        viewReportButton.setForeground(Color.WHITE);
+        viewReportButton.addActionListener(e -> {
+            int row = reportTable.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a report from the table.");
+                return;
+            }
+            String reportText = (String) reportTable.getValueAt(row, 3);
+            JTextArea textArea = new JTextArea(reportText);
+            textArea.setFont(new Font("Consolas", Font.PLAIN, 14));
+            textArea.setEditable(false);
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane.setPreferredSize(new Dimension(600, 400));
+            JOptionPane.showMessageDialog(this, scrollPane, "Full Report Submission", JOptionPane.PLAIN_MESSAGE);
+        });
+        reportsPanel.add(viewReportButton, BorderLayout.SOUTH);
+
+        tabbedPane.addTab("Project Reports", reportsPanel);
+
+        // Tab 4: Announcements Create
+        JPanel announcementPanel = new JPanel(new BorderLayout(10, 10));
+        announcementPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        JTextArea annArea = new JTextArea();
+        annArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        announcementPanel.add(new JScrollPane(annArea), BorderLayout.CENTER);
+        JButton createAnnButton = new JButton("Publish Announcement");
+        createAnnButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        createAnnButton.setBackground(new Color(13, 110, 253));
+        createAnnButton.setForeground(Color.WHITE);
+        createAnnButton.addActionListener(e -> {
+            String text = annArea.getText().trim();
+            if (text.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Announcement cannot be empty.");
+                return;
+            }
+            if (announcementDAO.createAnnouncement(text)) {
+                JOptionPane.showMessageDialog(this, "Announcement published successfully.");
+                annArea.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to publish announcement.");
+            }
+        });
+        announcementPanel.add(createAnnButton, BorderLayout.SOUTH);
+        tabbedPane.addTab("Make Announcement", announcementPanel);
+
         add(tabbedPane, BorderLayout.CENTER);
 
         // Bottom Action Panel
@@ -151,7 +220,7 @@ public class AdminDashboardPanel extends JPanel {
 
     public void setCurrentEmployee(Employee emp) {
         this.currentEmployee = emp;
-        welcomeLabel.setText("HR Dashboard - Welcome, " + emp.getName());
+        welcomeLabel.setText("Admin Dashboard - Welcome, " + emp.getName());
         refreshData();
     }
 
@@ -191,5 +260,18 @@ public class AdminDashboardPanel extends JPanel {
         }
 
         expensesLabel.setText(String.format("Total Payroll Expenses: $%.2f", totalExpenses));
+
+        // Refresh Reports Table
+        List<Report> reports = reportDAO.getAllReports();
+        DefaultTableModel repModel = (DefaultTableModel) reportTable.getModel();
+        repModel.setRowCount(0);
+        for (Report r : reports) {
+            repModel.addRow(new Object[]{
+                r.getId(),
+                r.getEmployeeId(),
+                r.getSubmittedAt().toString(),
+                r.getReportText()
+            });
+        }
     }
 }

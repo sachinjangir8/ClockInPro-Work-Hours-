@@ -77,7 +77,7 @@ public class RegisterPanel extends JPanel {
         JLabel roleLabel = new JLabel("Role:");
         roleLabel.setFont(labelFont);
         gbc.gridx = 0; gbc.gridy = 5; formPanel.add(roleLabel, gbc);
-        roleComboBox = new JComboBox<>(new String[]{"EMPLOYEE", "HR"});
+        roleComboBox = new JComboBox<>(new String[]{"EMPLOYEE", "ADMIN"});
         roleComboBox.setFont(fieldFont);
         roleComboBox.setBackground(Color.WHITE);
         gbc.gridx = 1; formPanel.add(roleComboBox, gbc);
@@ -128,10 +128,10 @@ public class RegisterPanel extends JPanel {
             return;
         }
 
-        if ("HR".equalsIgnoreCase(role)) {
-            String passkey = JOptionPane.showInputDialog(this, "Enter HR Passkey:");
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            String passkey = JOptionPane.showInputDialog(this, "Enter Admin Passkey:");
             if (!"111".equals(passkey)) {
-                JOptionPane.showMessageDialog(this, "Invalid HR Passkey. Registration cancelled.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid Admin Passkey. Registration cancelled.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }

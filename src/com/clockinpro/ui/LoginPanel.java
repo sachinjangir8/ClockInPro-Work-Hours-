@@ -106,17 +106,17 @@ public class LoginPanel extends JPanel {
 
         Employee emp = employeeService.login(email, password);
         if (emp != null) {
-            if ("HR".equalsIgnoreCase(emp.getRole()) || "ADMIN".equalsIgnoreCase(emp.getRole())) {
-                String passkey = JOptionPane.showInputDialog(this, "Enter HR Passkey to continue:");
+            if ("ADMIN".equalsIgnoreCase(emp.getRole())) {
+                String passkey = JOptionPane.showInputDialog(this, "Enter Admin Passkey to continue:");
                 if (!"111".equals(passkey)) {
-                    JOptionPane.showMessageDialog(this, "Invalid HR Passkey. Login cancelled.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Invalid Admin Passkey. Login cancelled.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
 
             JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
             
-            if ("HR".equalsIgnoreCase(emp.getRole()) || "ADMIN".equalsIgnoreCase(emp.getRole())) {
+            if ("ADMIN".equalsIgnoreCase(emp.getRole())) {
                 if (mainFrame.getAdminDashboardPanel() != null) {
                     mainFrame.getAdminDashboardPanel().setCurrentEmployee(emp);
                     mainFrame.showPanel("AdminDashboard");

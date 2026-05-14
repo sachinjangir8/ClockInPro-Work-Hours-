@@ -3,6 +3,9 @@ package com.clockinpro.ui;
 import com.clockinpro.model.Attendance;
 import com.clockinpro.model.Employee;
 import com.clockinpro.model.Payroll;
+import com.clockinpro.model.Announcement;
+import com.clockinpro.dao.AnnouncementDAO;
+import com.clockinpro.dao.ReportDAO;
 import com.clockinpro.service.AttendanceService;
 import com.clockinpro.service.PayrollService;
 
@@ -15,6 +18,8 @@ public class EmployeeDashboardPanel extends JPanel {
     private MainFrame mainFrame;
     private AttendanceService attendanceService;
     private PayrollService payrollService;
+    private AnnouncementDAO announcementDAO;
+    private ReportDAO reportDAO;
     private Employee currentEmployee;
 
     private JLabel welcomeLabel;
@@ -23,12 +28,15 @@ public class EmployeeDashboardPanel extends JPanel {
     private JLabel durationLabel;
     private JTable hoursTable;
     private JTable payrollTable;
+    private JTable announcementTable;
     private Timer uiTimer;
 
     public EmployeeDashboardPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         this.attendanceService = new AttendanceService();
         this.payrollService = new PayrollService();
+        this.announcementDAO = new AnnouncementDAO();
+        this.reportDAO = new ReportDAO();
 
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -196,6 +204,43 @@ public class EmployeeDashboardPanel extends JPanel {
         
         tabbedPane.addTab("Payroll Reports", payrollPanel);
 
+        // Panel 3: Announcements
+        JPanel announcementPanel = new JPanel(new BorderLayout(10, 10));
+        announcementPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        String[] annCols = {"Date", "Announcement"};
+        announcementTable = new JTable(new DefaultTableModel(annCols, 0));
+        announcementTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        announcementTable.setRowHeight(32);
+        announcementTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        announcementPanel.add(new JScrollPane(announcementTable), BorderLayout.CENTER);
+        tabbedPane.addTab("Announcements", announcementPanel);
+
+        // Panel 4: Submit Report
+        JPanel reportPanel = new JPanel(new BorderLayout(10, 10));
+        reportPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        JTextArea reportArea = new JTextArea();
+        reportArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        reportPanel.add(new JScrollPane(reportArea), BorderLayout.CENTER);
+        JButton submitReportButton = new JButton("Submit Project Report");
+        submitReportButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        submitReportButton.setBackground(new Color(25, 135, 84));
+        submitReportButton.setForeground(Color.WHITE);
+        submitReportButton.addActionListener(e -> {
+            String text = reportArea.getText().trim();
+            if (text.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Report cannot be empty.");
+                return;
+            }
+            if (reportDAO.submitReport(currentEmployee.getId(), text)) {
+                JOptionPane.showMessageDialog(this, "Report submitted successfully.");
+                reportArea.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to submit report.");
+            }
+        });
+        reportPanel.add(submitReportButton, BorderLayout.SOUTH);
+        tabbedPane.addTab("Submit Report", reportPanel);
+
         add(tabbedPane, BorderLayout.CENTER);
         
         startTimers();
@@ -266,6 +311,17 @@ public class EmployeeDashboardPanel extends JPanel {
                 p.getMonth(),
                 String.format("%.2f", p.getTotalHours()),
                 String.format("$%.2f", p.getTotalSalary())
+            });
+        }
+
+        // Refresh Announcements Table
+        List<Announcement> announcements = announcementDAO.getAllAnnouncements();
+        DefaultTableModel annModel = (DefaultTableModel) announcementTable.getModel();
+        annModel.setRowCount(0);
+        for (Announcement a : announcements) {
+            annModel.addRow(new Object[]{
+                a.getCreatedAt().toString(),
+                a.getAnnouncementText()
             });
         }
     }
