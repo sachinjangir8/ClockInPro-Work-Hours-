@@ -11,6 +11,7 @@ public class MainFrame extends JFrame {
     private RegisterPanel registerPanel;
     private EmployeeDashboardPanel employeeDashboardPanel;
     private AdminDashboardPanel adminDashboardPanel;
+    private WelcomePanel welcomePanel;
 
     public MainFrame() {
         setTitle("ClockInPro - Work Hours & Payroll Tracker");
@@ -22,12 +23,14 @@ public class MainFrame extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         // Initialize panels
+        welcomePanel = new WelcomePanel(this);
         loginPanel = new LoginPanel(this);
         registerPanel = new RegisterPanel(this);
         employeeDashboardPanel = new EmployeeDashboardPanel(this);
         adminDashboardPanel = new AdminDashboardPanel(this);
 
         // Add panels to card layout
+        mainPanel.add(welcomePanel, "Welcome");
         mainPanel.add(loginPanel, "Login");
         mainPanel.add(registerPanel, "Register");
         mainPanel.add(employeeDashboardPanel, "EmployeeDashboard");
@@ -35,8 +38,8 @@ public class MainFrame extends JFrame {
 
         add(mainPanel);
 
-        // Initially show Login
-        showPanel("Login");
+        // Initially show Welcome
+        showPanel("Welcome");
     }
 
     public void showPanel(String panelName) {
